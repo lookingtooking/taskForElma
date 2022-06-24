@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elma Task</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header id="header" class="nav">
+        <div class="container">
+            <div class="header-block">
+                <div class="date-title"></div>         
+                <div class="arrows">
+                    <div class="left-arrow"></div>
+                    <div class="right-arrow"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container main-block">
+            <div class="row-wrapper"></div>
+        </div>
+            <div class="backlog-block">
+                <div class="search-wrapper">
+                    <label for="search">Backlog<br></label>
+                    <input type="search" class="search">
+                </div>
+                <div class="user-cards"></div>
+                <template class="user-cards-template">
+                    <div class="card">
+                        <div class="task-name"></div>
+                    </div>
+                </template>
+            </div>
+    </main>
+    <script src="index.js"></script>
+</body>
+
+</html>
