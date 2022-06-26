@@ -217,9 +217,23 @@ function addDistributedTask(tasksArr) {
                     let row = document.getElementById(findObj.executor);
                     let y = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
                     // в найденный элемент добавляем таск
-                    document.elementFromPoint(x,y).innerHTML = `<div class="task-cell-content">${findObj.subject}</div>`;
+                    document.elementFromPoint(x,y).innerHTML += `<div class="task-cell-content">${findObj.subject}</div>`;
                     // удаляем из backlog
                     e.target.remove()
+                    // перезаписываем свойство planStartDate для таска:
+                    // 1. получаем координату столбца date-col в который перенесли таск
+                    let x1 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+                    let y1 = executorCol.getBoundingClientRect().top+executorCol.getBoundingClientRect().height/2;
+                    dateCol = document.elementFromPoint(x1,y1);
+                    // console.log(dateCol.id);
+                    // 2. dateCol.id - это дата в милисекундах, ниже код для перевода мс в формат yyyy-mm-dd
+                    console.log(dateCol.id);
+                    let date = new Date(+dateCol.id);
+                    let year = date.getFullYear();
+                    let month = ("0" + (date.getMonth() + 1)).slice(-2);
+                    let day = ("0" + date.getDate()).slice(-2); // получен формат yyyy-mm-dd
+                    // присваиваем значение date таску
+                    findObj.planStartDate = `${year}-${month}-${day}`;
                 }
             }
         // 
