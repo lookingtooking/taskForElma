@@ -27,7 +27,7 @@ body {
 }
 
 .container {
-  width: 80vw;
+  width: 85vw;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -42,11 +42,12 @@ main{
 }
 
 .backlog-block {
-  min-width: 17vw;
+  min-width: fit-content;
   border: 1px solid black;
   border-radius: 10px;
   text-align: center;
   padding-top: 10px;
+  padding-bottom: 10px;
   font-family: Georgia;
   font-style: normal;
   font-weight: 400;
@@ -110,7 +111,7 @@ main{
   background-position: center;
 }
 
-.executor-col {
+.executor-cell, .executor-col{
 color: rgb(110, 110, 110);
 display: flex;
 align-items: center;
@@ -138,12 +139,16 @@ border-radius: 10%;
   background-color: rgb(238, 238, 238);
 }
 
-.date-col {
+.date-col, .task-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding-left: 10px;
   padding-bottom: 5px;
   margin-right: 3px;
   min-width: 2rem;
   min-height: 2rem;
+  height: fit-content;
   flex: 1 1 100%;
   font-family: Georgia;
   font-style: normal;
@@ -151,6 +156,10 @@ border-radius: 10%;
   font-size: 16px;
   border-bottom: 1px solid rgba(163, 163, 163, 0.452);
   border-radius: 6%;
+}
+
+.task-cell-content {
+  font-size: 16px;
 }
 
 .search-wrapper {
@@ -165,6 +174,8 @@ input {
   font-style: normal;
   font-weight: 400;
   font-size: 16px;
+  border-radius: 5px;
+  padding: .2rem;
 }
 
 .user-cards {
@@ -176,8 +187,11 @@ input {
 }
 
 .card {
+  display: flex;
+  flex-wrap: wrap;
   margin: 0 5px;
   border: 1px solid black;
+  border-radius: 5px;
   background-color: white;
   padding: .25rem;
 }
