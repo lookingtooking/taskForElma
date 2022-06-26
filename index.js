@@ -236,26 +236,5 @@ function addDistributedTask(tasksArr) {
                     findObj.planStartDate = `${year}-${month}-${day}`;
                 }
             }
-        // 
-        // if (document.elementFromPoint(e.pageX, e.pageY).className === "task-cell"){  
-        //     // получаем date-col на который произошёл перенос таска
-        //     let x1 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
-        //     let y1 = executorCol.getBoundingClientRect().top+executorCol.getBoundingClientRect().height/2;
-        //     dateCol = document.elementFromPoint(x1,y1);
-        //     console.log(dateCol);
-        //     let x2 = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
-        //     let y2 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
-        //     executorId = document.elementFromPoint(x2,y2).id
-        //     let findObj = tasks.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
-        //     findObj.executor = Number(executorId); // назначаем задачу выбранному исполнителю
-        //     e.target.remove()
-        //     addTask(tasks)
-        //     // console.log(e.target.id);
-        //     // findObj = tasks.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
-        //     // findObj.executor = Number(executorId); // назначаем задачу выбранному исполнителю
-        //     // console.log(tasks);
-        //     //  e.target.remove()
-        //     //  addTask(tasks)
         }))
-        console.log(tasksArr);
     }
