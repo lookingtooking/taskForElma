@@ -1,5 +1,5 @@
 
-let startDate =  1655683200000; // 20 июня 2022
+let startDate =  1656288000000; // 20 июня 2022
 let lastDate;
 let executors;
 let tasks;
@@ -19,8 +19,8 @@ let array = urls.map((item) => {
 Promise.all(array).then(([tasks, executors]) => {
     createTaskLine(executors);
     createBacklog(tasks)
-    addTask(tasks)
-    drag()
+    addNotDistributedTask(tasks)
+    addDistributedTask(tasks)
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ timeLine ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,35 +117,29 @@ function createBacklog(tasksArr) {
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ add task in field ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-// let elem = document.elementFromPoint(x, y);
-
-
-// let elem = document.querySelector(".executor-cell")
-// x = elem.getBoundingClientRect().top + elem.getBoundingClientRect().height/2;
-// y = elem.getBoundingClientRect().left + elem.getBoundingClientRect().width/2;
-
-// let checkElem = document.elementFromPoint(x, y);
-
 let bodyRect = document.body.getBoundingClientRect()
 
-function addTask(tasksArr) {
+function addDistributedTask(tasksArr) {
     // const executorCell = document.querySelector(".executor-cell")
     // const taskCell = document.querySelector(".task-cell")
     // // const taskCell = document.querySelector(".task-cell")
     for (let i = 0; i < tasksArr.length; i++) {
         if (tasksArr[i].executor) { // указан ли исполнитель в таске
-            if (document.getElementById(Date.parse(new Date(tasksArr[i].planStartDate)))) { // Date.parse(new Date(tasksArr[i].planStartDate))) - числовое значение даты у таска
-                console.log(tasksArr[i].planStartDate);
+            if (document.getElementById(Date.parse(new Date(tasksArr[i].planStartDate)))) { // // проверка существования элемента на странице под данным id (ранее id присвоено значение даты)
+                 // получаем координаты столбца (стартовой даты)
                 let column = document.getElementById(Date.parse(new Date(tasksArr[i].planStartDate)));
-                x = column.getBoundingClientRect().left + column.getBoundingClientRect().width/2;
+                let x = column.getBoundingClientRect().left + column.getBoundingClientRect().width/2;
+                // получаем координаты строки по executor
                 let row = document.getElementById(tasksArr[i].executor);
-                y = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
-                document.elementFromPoint(x,y).innerHTML = `<div class="task-cell-content">${tasksArr[i].subject}</div>`;
+                let y = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
+                // в найденный элемент добавляем таск
+                document.elementFromPoint(x,y).innerHTML += `<div class="task-cell-content">${tasksArr[i].subject}</div>`;
             } 
         }
     }
 } 
     
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Arrow Block ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
     const leftArrow = document.querySelector('.left-arrow');
@@ -163,7 +157,8 @@ function addTask(tasksArr) {
         deleteCurrentTask();
         createDateTitle(lastDate+86400000);
         createMonthTitle(curDate);
-        addTask(tasks)
+        addDistributedTask(tasks)
+        addNotDistributedTask(tasks)
     })
     
     leftArrow.addEventListener('click', () => {
@@ -171,28 +166,82 @@ function addTask(tasksArr) {
         deleteCurrentTask();
         createDateTitle(lastDate-86400000*13);
         createMonthTitle(curDate)
-        addTask(tasks)
+        addDistributedTask(tasks)
+        addNotDistributedTask(tasks)
     })
-    
+
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ drag and drop ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    function drag() {
+    function addNotDistributedTask(tasksArr) {
         const executorCell = document.querySelector(".executor-cell")
+        const executorCol = document.querySelector(".executor-col")
         const cardCells = document.querySelectorAll(".card")
         cardCells.forEach(card => card.addEventListener('dragend', (e) => {
-        console.log(e.target);
-        if (document.elementFromPoint(e.pageX, e.pageY).className === "task-cell"){  // отрабатывает только на нужной ячейке
-            // получаем id исполнители, на строчку которого был перенос таска
-            x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
-            y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
-            executorId = document.elementFromPoint(x,y).id; // получаем id исполнителя 
-            console.log(e.target.id);
-            findObj = tasks.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
-            findObj.executor = +executorId; // назначаем задачу выбранному исполнителю
-            console.log(tasks);
-             e.target.remove()
-             addTask(tasks)
+        // Если задачу закинуть на самого пользователя (в первый столбец), то задача ставится на те даты, которые указаны в ее свойствах.
+            if (document.elementFromPoint(e.pageX, e.pageY).className === "executor-cell"){  // отрабатывает только на нужной ячейке
+                // получаем id исполнители, на строчку которого был перенос таска
+                let x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+                let y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
+                let executorId = document.elementFromPoint(x,y).id; // получаем id исполнителя 
+                let findObj = tasksArr.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
+                findObj.executor = Number(executorId); // добавляем в ранее нераспределенную задачу id исполнителя в параметр executor
+                console.log(findObj.planStartDate);
+                if (document.getElementById(Date.parse(new Date(findObj.planStartDate)))) { // проверка существования элемента с датой на странице под данным id (id ранее привоено значение Date.parse(дата))
+                    // получаем координаты столбца (стартовой даты)
+                    let column = document.getElementById(Date.parse(new Date(findObj.planStartDate)));
+                    let x = column.getBoundingClientRect().left + column.getBoundingClientRect().width/2;
+                    // получаем координаты строки (по исполниелю на котором произошло событие)
+                    let row = document.getElementById(findObj.executor);
+                    let y = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
+                    // в найденный элемент добавляем таск
+                    document.elementFromPoint(x,y).innerHTML += `<div class="task-cell-content">${findObj.subject}</div>`;
+                    // удаляем из backlog
+                    e.target.remove()
+                }
             }
+            // Если задачу закинуть на поле таск
+            if (document.elementFromPoint(e.pageX, e.pageY).className === "task-cell"){  // отрабатывает только на нужной ячейке
+                // получаем id исполнители, на строчку которого был перенос таска
+                let x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+                let y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
+                let executorId = document.elementFromPoint(x,y).id; // получаем id исполнителя 
+                let findObj = tasksArr.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
+                findObj.executor = Number(executorId); // добавляем в ранее нераспределенную задачу id исполнителя в параметр executor
+                console.log(findObj.planStartDate);
+                if (document.getElementById(Date.parse(new Date(findObj.planStartDate)))) { // проверка существования элемента с датой на странице под данным id (id ранее привоено значение Date.parse(дата))
+                    // получаем координаты столбца (стартовой даты)
+                    let column = document.elementFromPoint(e.pageX, e.pageY);
+                    let x = column.getBoundingClientRect().left;
+                    // получаем координаты строки (по исполниелю на котором произошло событие)
+                    let row = document.getElementById(findObj.executor);
+                    let y = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
+                    // в найденный элемент добавляем таск
+                    document.elementFromPoint(x,y).innerHTML = `<div class="task-cell-content">${findObj.subject}</div>`;
+                    // удаляем из backlog
+                    e.target.remove()
+                }
+            }
+        // 
+        // if (document.elementFromPoint(e.pageX, e.pageY).className === "task-cell"){  
+        //     // получаем date-col на который произошёл перенос таска
+        //     let x1 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+        //     let y1 = executorCol.getBoundingClientRect().top+executorCol.getBoundingClientRect().height/2;
+        //     dateCol = document.elementFromPoint(x1,y1);
+        //     console.log(dateCol);
+        //     let x2 = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+        //     let y2 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
+        //     executorId = document.elementFromPoint(x2,y2).id
+        //     let findObj = tasks.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
+        //     findObj.executor = Number(executorId); // назначаем задачу выбранному исполнителю
+        //     e.target.remove()
+        //     addTask(tasks)
+        //     // console.log(e.target.id);
+        //     // findObj = tasks.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
+        //     // findObj.executor = Number(executorId); // назначаем задачу выбранному исполнителю
+        //     // console.log(tasks);
+        //     //  e.target.remove()
+        //     //  addTask(tasks)
         }))
+        console.log(tasksArr);
     }

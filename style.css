@@ -142,12 +142,12 @@ border-radius: 10%;
 .date-col, .task-cell {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   padding-left: 10px;
   padding-bottom: 5px;
   margin-right: 3px;
   min-width: 2rem;
-  min-height: 2rem;
+  min-height: 3rem;
   height: fit-content;
   flex: 1 1 100%;
   font-family: Georgia;
@@ -158,6 +158,11 @@ border-radius: 10%;
   border-radius: 6%;
 }
 
+.task-cell {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
 .task-cell-content {
   font-size: 16px;
 }
