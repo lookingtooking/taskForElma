@@ -184,6 +184,7 @@ input {
   font-size: 14px;
   gap: .25rem;
   margin-top: 1rem;
+  cursor: pointer;
 }
 
 .card {

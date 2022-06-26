@@ -20,6 +20,7 @@ Promise.all(array).then(([tasks, executors]) => {
     createTaskLine(executors);
     createBacklog(tasks)
     addTask(tasks)
+    drag()
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ timeLine ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,7 +104,8 @@ function createBacklog(tasksArr) {
         const userCards = document.querySelector(".user-cards")
         const card = document.createElement("div");
         card.classList.add('card');
-        card.setAttribute("id", tasksArr[i].id)
+        card.setAttribute("id", tasksArr[i].id);
+        card.setAttribute("draggable", true);
         card.innerText = `${tasksArr[i].subject}`
         tasksArr[i].element = card;
         if (!tasksArr[i].executor) {
@@ -143,12 +145,6 @@ function addTask(tasksArr) {
         }
     }
 } 
-
-// for (let i = 6; i > -1; i--) {
-    //     const day = 86400000; 
-    //     Date.parse(curDate)-day*i; // проходимся по датам
-    // }
-    
     
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Arrow Block ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     
@@ -177,3 +173,26 @@ function addTask(tasksArr) {
         createMonthTitle(curDate)
         addTask(tasks)
     })
+    
+    
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ drag and drop ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    function drag() {
+        const executorCell = document.querySelector(".executor-cell")
+        const cardCells = document.querySelectorAll(".card")
+        cardCells.forEach(card => card.addEventListener('dragend', (e) => {
+        console.log(e.target);
+        if (document.elementFromPoint(e.pageX, e.pageY).className === "task-cell"){  // отрабатывает только на нужной ячейке
+            // получаем id исполнители, на строчку которого был перенос таска
+            x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+            y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
+            executorId = document.elementFromPoint(x,y).id; // получаем id исполнителя 
+            console.log(e.target.id);
+            findObj = tasks.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
+            findObj.executor = +executorId; // назначаем задачу выбранному исполнителю
+            console.log(tasks);
+             e.target.remove()
+             addTask(tasks)
+            }
+        }))
+    }
