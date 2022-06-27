@@ -158,7 +158,6 @@ function addDistributedTask(tasksArr) {
         createDateTitle(lastDate+86400000);
         createMonthTitle(curDate);
         addDistributedTask(tasks)
-        addNotDistributedTask(tasks)
     })
     
     leftArrow.addEventListener('click', () => {
@@ -167,7 +166,6 @@ function addDistributedTask(tasksArr) {
         createDateTitle(lastDate-86400000*13);
         createMonthTitle(curDate)
         addDistributedTask(tasks)
-        addNotDistributedTask(tasks)
     })
 
     
@@ -179,7 +177,7 @@ function addDistributedTask(tasksArr) {
         const cardCells = document.querySelectorAll(".card")
         cardCells.forEach(card => card.addEventListener('dragend', (e) => {
         // Если задачу закинуть на самого пользователя (в первый столбец), то задача ставится на те даты, которые указаны в ее свойствах.
-            if (document.elementFromPoint(e.pageX, e.pageY).className === "executor-cell"){  // отрабатывает только на нужной ячейке
+            if (document.elementFromPoint(e.pageX, e.pageY).className === "executor-cell" ){  // отрабатывает только на нужной ячейке
                 // получаем id исполнители, на строчку которого был перенос таска
                 let x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
                 let y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
@@ -189,6 +187,7 @@ function addDistributedTask(tasksArr) {
                 console.log(findObj.planStartDate);
                 if (document.getElementById(Date.parse(new Date(findObj.planStartDate)))) { // проверка существования элемента с датой на странице под данным id (id ранее привоено значение Date.parse(дата))
                     // получаем координаты столбца (стартовой даты)
+                    console.log(11111111111);
                     let column = document.getElementById(Date.parse(new Date(findObj.planStartDate)));
                     let x = column.getBoundingClientRect().left + column.getBoundingClientRect().width/2;
                     // получаем координаты строки (по исполниелю на котором произошло событие)
@@ -201,7 +200,8 @@ function addDistributedTask(tasksArr) {
                 }
             }
             // Если задачу закинуть на поле таск
-            if (document.elementFromPoint(e.pageX, e.pageY).className === "task-cell"){  // отрабатывает только на нужной ячейке
+                const targetClass = document.elementFromPoint(e.pageX, e.pageY).className
+            if (targetClass === "task-cell" || targetClass === "task-cell-content"){  // отрабатывает только на нужной ячейке
                 // получаем id исполнители, на строчку которого был перенос таска
                 let x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
                 let y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top;
@@ -209,32 +209,31 @@ function addDistributedTask(tasksArr) {
                 let findObj = tasksArr.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
                 findObj.executor = Number(executorId); // добавляем в ранее нераспределенную задачу id исполнителя в параметр executor
                 console.log(findObj.planStartDate);
-                if (document.getElementById(Date.parse(new Date(findObj.planStartDate)))) { // проверка существования элемента с датой на странице под данным id (id ранее привоено значение Date.parse(дата))
-                    // получаем координаты столбца (стартовой даты)
-                    let column = document.elementFromPoint(e.pageX, e.pageY);
-                    let x = column.getBoundingClientRect().left;
-                    // получаем координаты строки (по исполниелю на котором произошло событие)
-                    let row = document.getElementById(findObj.executor);
-                    let y = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
-                    // в найденный элемент добавляем таск
-                    document.elementFromPoint(x,y).innerHTML += `<div class="task-cell-content">${findObj.subject}</div>`;
-                    // удаляем из backlog
-                    e.target.remove()
-                    // перезаписываем свойство planStartDate для таска:
-                    // 1. получаем координату столбца date-col в который перенесли таск
-                    let x1 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
-                    let y1 = executorCol.getBoundingClientRect().top+executorCol.getBoundingClientRect().height/2;
-                    dateCol = document.elementFromPoint(x1,y1);
-                    // console.log(dateCol.id);
-                    // 2. dateCol.id - это дата в милисекундах, ниже код для перевода мс в формат yyyy-mm-dd
-                    console.log(dateCol.id);
-                    let date = new Date(+dateCol.id);
-                    let year = date.getFullYear();
-                    let month = ("0" + (date.getMonth() + 1)).slice(-2);
-                    let day = ("0" + date.getDate()).slice(-2); // получен формат yyyy-mm-dd
-                    // присваиваем значение date таску
-                    findObj.planStartDate = `${year}-${month}-${day}`;
-                }
+                // получаем координаты столбца (стартовой даты)
+                let column = document.elementFromPoint(e.pageX, e.pageY);
+                let x1 = column.getBoundingClientRect().left;
+                // получаем координаты строки (по исполниелю на котором произошло событие)
+                let row = document.getElementById(findObj.executor);
+                let y1 = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
+                // в найденный элемент добавляем таск
+                document.elementFromPoint(x1,y1).innerHTML += `<div class="task-cell-content">${findObj.subject}</div>`;
+                // удаляем из backlog
+                e.target.remove()
+                // перезаписываем свойство planStartDate для таска:
+                // 1. получаем координату столбца date-col в который перенесли таск
+                const executorCol = document.querySelector(".executor-col")
+                let x2 = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
+                let y2 = executorCol.getBoundingClientRect().top+executorCol.getBoundingClientRect().height/2;
+                dateCol = document.elementFromPoint(x2,y2);
+                // 2. dateCol.id - это дата в милисекундах, ниже код для перевода мс в формат yyyy-mm-dd
+                let date = new Date(+dateCol.id);
+                let year = date.getFullYear();
+                let month = ("0" + (date.getMonth() + 1)).slice(-2);
+                let day = ("0" + date.getDate()).slice(-2); // получен формат yyyy-mm-dd
+                // присваиваем значение date таску
+                findObj.planStartDate = `${year}-${month}-${day}`;
+                console.log(executorCol.getBoundingClientRect());
             }
+            console.log(tasksArr);
         }))
     }
