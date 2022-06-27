@@ -71,6 +71,7 @@ function createTaskLine(executors) {
             for (let j = 0; j < 7; j++) {
                 const taskBlock = document.createElement("div");
                 taskBlock.classList.add('task-cell');
+                taskBlock.setAttribute("data-tooltip", executors[i].surname)
                 taskLine.append(taskBlock)
             }
         }
