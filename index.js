@@ -177,10 +177,11 @@ function addDistributedTask(tasksArr) {
         const cardCells = document.querySelectorAll(".card")
         cardCells.forEach(card => card.addEventListener('dragend', (e) => {
         // Если задачу закинуть на самого пользователя (в первый столбец), то задача ставится на те даты, которые указаны в ее свойствах.
-            if (document.elementFromPoint(e.pageX, e.pageY).className === "executor-cell" ){  // отрабатывает только на нужной ячейке
+            const targetCell = document.elementFromPoint(e.pageX, e.pageY)
+            if (targetCell.className === "executor-cell" ){  // отрабатывает только на нужной ячейке
                 // получаем id исполнители, на строчку которого был перенос таска
                 let x = executorCell.getBoundingClientRect().left + executorCell.getBoundingClientRect().width/2;
-                let y = document.elementFromPoint(e.pageX, e.pageY).getBoundingClientRect().top - window.pageYOffset;
+                let y = targetCell.getBoundingClientRect().top + targetCell.getBoundingClientRect().height/2;
                 let executorId = document.elementFromPoint(x,y).id; // получаем id исполнителя 
                 let findObj = tasksArr.find(task => task.id === e.target.id); // ищем данный таск в массиве объектов
                 findObj.executor = Number(executorId); // добавляем в ранее нераспределенную задачу id исполнителя в параметр executor
@@ -214,7 +215,7 @@ function addDistributedTask(tasksArr) {
                 let x1 = column.getBoundingClientRect().left;
                 // получаем координаты строки (по исполниелю на котором произошло событие)
                 let row = document.getElementById(findObj.executor);
-                let y1 = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2 - window.pageYOffset;
+                let y1 = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
                 // в найденный элемент добавляем таск
                 document.elementFromPoint(x1,y1).innerHTML += `<div class="task-cell-content">${findObj.subject}</div>`;
                 // удаляем из backlog
